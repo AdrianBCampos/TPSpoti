@@ -5,6 +5,7 @@ import ar.edu.davinci.demo.model.Genero;
 import ar.edu.davinci.demo.service.CancionService;
 import ar.edu.davinci.demo.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,14 +26,22 @@ public class CancionController {
     }
 
     @PostMapping
-    public Cancion crearCancion(@RequestBody Map<String, Object> requestBody) {
-        String nombre = requestBody.get("nombre").toString();
-        String letra = requestBody.get("letra").toString();
-        Genero genero = Genero.valueOf(requestBody.get("genero").toString());
-        Cancion cancion = new Cancion (nombre, letra, genero);
-        return cancionService.crearCancion(cancion);
-    }
+    public ResponseEntity<Cancion> crearCancion(@RequestBody Map<String, Object> requestBody) {
+        try {
+            String nombre = requestBody.get("nombre").toString();
+            String letra = requestBody.get("letra").toString();
+            Genero genero = Genero.valueOf(requestBody.get("genero").toString().toUpperCase());
 
+            Cancion nuevaCancion = new Cancion(nombre, letra, genero);
+            Cancion cancionGuardada = cancionService.crearCancion(nuevaCancion);
+
+            return ResponseEntity.ok(cancionGuardada);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null); // Manejo de valor inválido para 'genero'
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Manejo de cualquier otro error
+        }
+    }
 
     @GetMapping("/{id}")
     public Cancion buscarCancionPorId(@PathVariable Long id) {
