@@ -6,6 +6,7 @@ import ar.edu.davinci.demo.model.DTO.CancionDTO;
 import ar.edu.davinci.demo.model.Genero;
 import ar.edu.davinci.demo.repository.CancionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +19,23 @@ public class CancionService {
 
     public Cancion crearCancion(CancionDTO cancionDTO){
 
-        Cancion cancion = new Cancion();
-        cancion.setNombre(cancionDTO.getNombre());
-        cancion.setLetra(cancionDTO.getLetra());
-        cancion.setGenero(Genero.valueOf(cancionDTO.getGenero().toUpperCase()));
+        try {
+            Cancion cancion = new Cancion();
+            cancion.setNombre(cancionDTO.getNombre());
+            cancion.setLetra(cancionDTO.getLetra());
+            cancion.setGenero(Genero.valueOf(cancionDTO.getGenero().toUpperCase()));
 
-        return  cancionRepository.save(cancion);
+            return cancionRepository.save(cancion);
+        } catch (IllegalArgumentException e) {
+            // Manejo de excepción si el valor del género no es válido
+            throw new RuntimeException("Género no válido: " + cancionDTO.getGenero(), e);
+        } catch (DataAccessException e) {
+            // Manejo de excepción si hay un error al acceder a la base de datos
+            throw new RuntimeException("Error al acceder a la base de datos", e);
+        } catch (Exception e) {
+            // Manejo de cualquier otra excepción inesperada
+            throw new RuntimeException("Error al crear la canción", e);
+        }
     }
 
 

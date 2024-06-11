@@ -2,7 +2,7 @@ package ar.edu.davinci.demo.controller;
 
 import ar.edu.davinci.demo.model.Cancion;
 import ar.edu.davinci.demo.model.DTO.CancionDTO;
-import ar.edu.davinci.demo.model.Genero;
+
 import ar.edu.davinci.demo.service.CancionService;
 import ar.edu.davinci.demo.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+
 
 
 @RestController
@@ -28,9 +28,13 @@ public class CancionController {
 
 
     @PostMapping
-    public ResponseEntity<Cancion> crearCancion(@RequestBody CancionDTO cancionDTO) {
-        Cancion cancionGuardada = cancionService.crearCancion(cancionDTO);
-        return ResponseEntity.ok(cancionGuardada);
+    public ResponseEntity<Object> crearCancion(@RequestBody CancionDTO cancionDTO) {
+        try {
+            Cancion cancionGuardada = cancionService.crearCancion(cancionDTO);
+            return ResponseEntity.ok(cancionGuardada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
