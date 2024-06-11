@@ -8,7 +8,7 @@ import ar.edu.davinci.demo.repository.CancionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -73,28 +73,27 @@ public class CancionService {
     }
 
 
+
     public Cancion actualizarCancion(Long id, CancionDTO cancionDTO) {
         try {
             Cancion cancion = cancionRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Cancion con id " + id + " no encontrada."));
 
-            if (cancionDTO.getNombre() == null || cancionDTO.getNombre().isEmpty()) {
-                throw new IllegalArgumentException("El nombre de la canción no puede estar vacío.");
-            }
-            if (cancionDTO.getLetra() == null || cancionDTO.getLetra().isEmpty()) {
-                throw new IllegalArgumentException("La letra de la canción no puede estar vacía.");
-            }
-            if (cancionDTO.getGenero() == null || cancionDTO.getGenero().isEmpty()) {
-                throw new IllegalArgumentException("El género de la canción no puede estar vacío.");
+            if (cancionDTO.getNombre() != null && !cancionDTO.getNombre().isEmpty()) {
+                cancion.setNombre(cancionDTO.getNombre());
             }
 
-            cancion.setNombre(cancionDTO.getNombre());
-            cancion.setLetra(cancionDTO.getLetra());
-            cancion.setGenero(Genero.valueOf(cancionDTO.getGenero().toUpperCase()));
+            if (cancionDTO.getLetra() != null && !cancionDTO.getLetra().isEmpty()) {
+                cancion.setLetra(cancionDTO.getLetra());
+            }
+
+            if (cancionDTO.getGenero() != null && !cancionDTO.getGenero().isEmpty()) {
+                cancion.setGenero(Genero.valueOf(cancionDTO.getGenero().toUpperCase()));
+            }
 
             return cancionRepository.save(cancion);
         } catch (IllegalArgumentException e) {
-            // Manejo de excepción si algún campo es inválido
+            // Manejo de excepción si el valor del género no es válido
             throw new RuntimeException(e.getMessage(), e);
         } catch (DataAccessException e) {
             // Manejo de excepción si hay un error al acceder a la base de datos

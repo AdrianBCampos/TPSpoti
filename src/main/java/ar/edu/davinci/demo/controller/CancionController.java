@@ -64,11 +64,18 @@ public class CancionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-    @DeleteMapping("/{id}")
+    /*@DeleteMapping("/{id}")
     public void eliminarCancion(@PathVariable Long id) {
         Cancion cancion = cancionService.buscarCancionPorId(id).orElseThrow(() -> new ResourceNotFoundException("Cancion not found with id " + id));
         cancionService.eliminarCancion(cancion);
-    }
+    }*/
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminarCancion(@PathVariable Long id) {
+        Cancion cancion = cancionService.buscarCancionPorId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cancion not found with id " + id));
+        cancionService.eliminarCancion(cancion);
+        return ResponseEntity.ok("La canción \"" + cancion.getNombre() + "\" fue eliminada.");
+    }
 
 }
