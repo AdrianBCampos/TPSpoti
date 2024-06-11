@@ -1,6 +1,7 @@
 package ar.edu.davinci.demo.controller;
 
 import ar.edu.davinci.demo.model.Cancion;
+import ar.edu.davinci.demo.model.DTO.CancionDTO;
 import ar.edu.davinci.demo.model.Genero;
 import ar.edu.davinci.demo.service.CancionService;
 import ar.edu.davinci.demo.exception.ResourceNotFoundException;
@@ -25,22 +26,11 @@ public class CancionController {
         return cancionService.buscarTodasLasCanciones();
     }
 
+
     @PostMapping
-    public ResponseEntity<Cancion> crearCancion(@RequestBody Map<String, Object> requestBody) {
-        try {
-            String nombre = requestBody.get("nombre").toString();
-            String letra = requestBody.get("letra").toString();
-            Genero genero = Genero.valueOf(requestBody.get("genero").toString().toUpperCase());
-
-            Cancion nuevaCancion = new Cancion(nombre, letra, genero);
-            Cancion cancionGuardada = cancionService.crearCancion(nuevaCancion);
-
-            return ResponseEntity.ok(cancionGuardada);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null); // Manejo de valor inválido para 'genero'
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Manejo de cualquier otro error
-        }
+    public ResponseEntity<Cancion> crearCancion(@RequestBody CancionDTO cancionDTO) {
+        Cancion cancionGuardada = cancionService.crearCancion(cancionDTO);
+        return ResponseEntity.ok(cancionGuardada);
     }
 
     @GetMapping("/{id}")
@@ -62,27 +52,9 @@ public class CancionController {
 
 
     @PutMapping("/{id}")
-    public Cancion modificarCancion(@PathVariable Long id, @RequestBody Cancion cancionDetails) {
-        Cancion cancion = cancionService.buscarCancionPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cancion con id " + id + " ,no encontrada."));
-
-        // Verificar y actualizar el nombre si se proporciona en la solicitud
-        if (cancionDetails.getNombre() != null) {
-            cancion.setNombre(cancionDetails.getNombre());
-        }
-
-        // Verificar y actualizar la letra si se proporciona en la solicitud
-        if (cancionDetails.getLetra() != null) {
-            cancion.setLetra(cancionDetails.getLetra());
-        }
-
-        // Verificar y actualizar el género si se proporciona en la solicitud
-        if (cancionDetails.getGenero() != null) {
-            cancion.setGenero(cancionDetails.getGenero());
-        }
-
-        // Guardar la canción actualizada en la base de datos
-        return cancionService.crearCancion(cancion);
+    public ResponseEntity<Cancion> modificarCancion(@PathVariable Long id, @RequestBody CancionDTO cancionDTO) {
+        Cancion cancionActualizada = cancionService.actualizarCancion(id, cancionDTO);
+        return ResponseEntity.ok(cancionActualizada);
     }
 
     @DeleteMapping("/{id}")

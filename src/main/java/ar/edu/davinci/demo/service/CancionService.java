@@ -1,6 +1,9 @@
 package ar.edu.davinci.demo.service;
 
+import ar.edu.davinci.demo.exception.ResourceNotFoundException;
 import ar.edu.davinci.demo.model.Cancion;
+import ar.edu.davinci.demo.model.DTO.CancionDTO;
+import ar.edu.davinci.demo.model.Genero;
 import ar.edu.davinci.demo.repository.CancionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +16,14 @@ public class CancionService {
     @Autowired
     private CancionRepository cancionRepository;
 
-    public Cancion crearCancion(Cancion cancion){
-        cancionRepository.save(cancion);
-        return cancion;
+    public Cancion crearCancion(CancionDTO cancionDTO){
+
+        Cancion cancion = new Cancion();
+        cancion.setNombre(cancionDTO.getNombre());
+        cancion.setLetra(cancionDTO.getLetra());
+        cancion.setGenero(Genero.valueOf(cancionDTO.getGenero().toUpperCase()));
+
+        return  cancionRepository.save(cancion);
     }
 
 
@@ -39,10 +47,22 @@ public class CancionService {
         cancionRepository.delete((cancion));
     }
 
-    public Cancion actualizarCancion(Cancion cancion) {
-        // Aquí puedes realizar alguna validación adicional si lo necesitas
 
-        // Guardar la canción actualizada en la base de datos
+    public Cancion actualizarCancion(Long id, CancionDTO cancionDTO) {
+        Cancion cancion = cancionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cancion con id " + id + " no encontrada."));
+
+        if (cancionDTO.getNombre() != null) {
+            cancion.setNombre(cancionDTO.getNombre());
+        }
+
+        if (cancionDTO.getLetra() != null) {
+            cancion.setLetra(cancionDTO.getLetra());
+        }
+
+        if (cancionDTO.getGenero() != null) {
+            cancion.setGenero(Genero.valueOf(cancionDTO.getGenero().toUpperCase()));
+        }
+
         return cancionRepository.save(cancion);
     }
 }
