@@ -5,6 +5,3 @@ CREATE TABLE IF NOT EXISTS canciones (
                                          genero VARCHAR(50)
     );
 
--- Inserción de datos en la tabla canciones
-INSERT INTO canciones (nombre, letra, genero) VALUES ('Turing', 'Letra de Turing', 'ROCK');
-INSERT INTO canciones (nombre, letra, genero) VALUES ('Lovelace', 'Letra de Lovelace', 'POP');

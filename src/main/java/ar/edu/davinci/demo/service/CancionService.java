@@ -17,18 +17,31 @@ public class CancionService {
     @Autowired
     private CancionRepository cancionRepository;
 
-    public Cancion crearCancion(CancionDTO cancionDTO){
 
+    public Cancion crearCancion(CancionDTO cancionDTO) {
         try {
+            // Validar que los campos no estén vacíos
+            if (cancionDTO.getNombre() == null || cancionDTO.getNombre().isEmpty()) {
+                throw new IllegalArgumentException("El nombre de la canción no puede estar vacío.");
+            }
+            if (cancionDTO.getLetra() == null || cancionDTO.getLetra().isEmpty()) {
+                throw new IllegalArgumentException("La letra de la canción no puede estar vacía.");
+            }
+            if (cancionDTO.getGenero() == null || cancionDTO.getGenero().isEmpty()) {
+                throw new IllegalArgumentException("El género de la canción no puede estar vacío.");
+            }
+
+            // Crear la canción
             Cancion cancion = new Cancion();
             cancion.setNombre(cancionDTO.getNombre());
             cancion.setLetra(cancionDTO.getLetra());
             cancion.setGenero(Genero.valueOf(cancionDTO.getGenero().toUpperCase()));
 
+            // Guardar la canción en la base de datos
             return cancionRepository.save(cancion);
         } catch (IllegalArgumentException e) {
-            // Manejo de excepción si el valor del género no es válido
-            throw new RuntimeException("Género no válido: " + cancionDTO.getGenero(), e);
+            // Manejo de excepción si alguno de los datos está vacío
+            throw new IllegalArgumentException(e.getMessage(), e);
         } catch (DataAccessException e) {
             // Manejo de excepción si hay un error al acceder a la base de datos
             throw new RuntimeException("Error al acceder a la base de datos", e);
@@ -61,20 +74,34 @@ public class CancionService {
 
 
     public Cancion actualizarCancion(Long id, CancionDTO cancionDTO) {
-        Cancion cancion = cancionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cancion con id " + id + " no encontrada."));
+        try {
+            Cancion cancion = cancionRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Cancion con id " + id + " no encontrada."));
 
-        if (cancionDTO.getNombre() != null) {
+            if (cancionDTO.getNombre() == null || cancionDTO.getNombre().isEmpty()) {
+                throw new IllegalArgumentException("El nombre de la canción no puede estar vacío.");
+            }
+            if (cancionDTO.getLetra() == null || cancionDTO.getLetra().isEmpty()) {
+                throw new IllegalArgumentException("La letra de la canción no puede estar vacía.");
+            }
+            if (cancionDTO.getGenero() == null || cancionDTO.getGenero().isEmpty()) {
+                throw new IllegalArgumentException("El género de la canción no puede estar vacío.");
+            }
+
             cancion.setNombre(cancionDTO.getNombre());
-        }
-
-        if (cancionDTO.getLetra() != null) {
             cancion.setLetra(cancionDTO.getLetra());
-        }
-
-        if (cancionDTO.getGenero() != null) {
             cancion.setGenero(Genero.valueOf(cancionDTO.getGenero().toUpperCase()));
-        }
 
-        return cancionRepository.save(cancion);
+            return cancionRepository.save(cancion);
+        } catch (IllegalArgumentException e) {
+            // Manejo de excepción si algún campo es inválido
+            throw new RuntimeException(e.getMessage(), e);
+        } catch (DataAccessException e) {
+            // Manejo de excepción si hay un error al acceder a la base de datos
+            throw new RuntimeException("Error al acceder a la base de datos", e);
+        } catch (Exception e) {
+            // Manejo de cualquier otra excepción inesperada
+            throw new RuntimeException("Error al actualizar la canción", e);
+        }
     }
 }

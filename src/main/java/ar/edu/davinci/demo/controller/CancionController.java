@@ -56,11 +56,14 @@ public class CancionController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cancion> modificarCancion(@PathVariable Long id, @RequestBody CancionDTO cancionDTO) {
-        Cancion cancionActualizada = cancionService.actualizarCancion(id, cancionDTO);
-        return ResponseEntity.ok(cancionActualizada);
+    public ResponseEntity<Object> modificarCancion(@PathVariable Long id, @RequestBody CancionDTO cancionDTO) {
+        try {
+            Cancion cancionActualizada = cancionService.actualizarCancion(id, cancionDTO);
+            return ResponseEntity.ok(cancionActualizada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
-
     @DeleteMapping("/{id}")
     public void eliminarCancion(@PathVariable Long id) {
         Cancion cancion = cancionService.buscarCancionPorId(id).orElseThrow(() -> new ResourceNotFoundException("Cancion not found with id " + id));
