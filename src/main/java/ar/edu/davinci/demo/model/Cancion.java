@@ -13,6 +13,10 @@ public class Cancion {
     @Enumerated(EnumType.STRING)
     private Genero genero;
 
+    @ManyToOne
+    @JoinColumn(name = "disco_id")
+    private Disco disco;
+
     public Cancion(){
 
     }
@@ -22,6 +26,12 @@ public class Cancion {
         this.letra = letra;
         this.genero = genero;
     }
+
+    public Cancion(Long id) {
+        this.id = id;
+
+    }
+
 
     public long getId() {
         return id;
@@ -53,5 +63,8 @@ public class Cancion {
 
     public void setGenero(Genero genero) {
         this.genero = genero;
+    }
+
+    public void setDisco(Disco disco) {
     }
 }

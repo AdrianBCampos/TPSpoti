@@ -1,13 +1,14 @@
 package ar.edu.davinci.demo.model;
 
 public enum Genero {
+    ROCK,
+    POP,
+    SALSA,
     JAZZ,
     BLUES,
-    ROCK,
     ELECTRONICA,
     CLASICA,
     TANGO,
-    POP,
     RHYTHMANDBLUES,
     GOSPEL,
     SOUL,
@@ -24,7 +25,6 @@ public enum Genero {
     DRUMANDBASS,
     GARAGE,
     FLAMENCO,
-    SALSA,
     HIPHOP,
     REGGAETON,
     GLAMROCK,
@@ -58,6 +58,6 @@ public enum Genero {
     FUJI,
     CHAABI,
     HIGLIFE,
-    LOFI
+    LOFI;
 
 }
